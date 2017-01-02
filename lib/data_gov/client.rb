@@ -6,9 +6,11 @@ module DataGov
     ##
     # @return [Hash] a parsed JSON hash
     def get(path, params = {})
-      connection.get(path) do |req|
+      response = connection.get(path) do |req|
         req.params = params
-      end.body
+      end
+      puts "#{response.status} #{response.env.url}"
+      response.body
     end
 
     def paginated_get(path, accessor, options = {})
@@ -28,8 +30,8 @@ module DataGov
             yielder.yield element
           end
 
-          start += 1
-
+          start += rows
+          puts "total: #{total}, max: #{max}, count: #{data['result']['count']}"
           break if total >= data['result']['count'] || total >= max
         end
       end
