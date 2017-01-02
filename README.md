@@ -1,8 +1,6 @@
 # GovScooper
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/gov_scooper`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Scoopin' up all of the metadata from Data.gov. GovScooper is a paginated harvester of the Data.gov CKAN API. It also enables you to save that metadata in a pairtree.
 
 ## Installation
 
@@ -22,7 +20,12 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+metadata_enumberable = DataGov::API.new.search
+metadata_enumberable.length #=> 10
+metadata_enumberable.map { |md| DataGov::Dataset.new(md).save_ckan_metadata }
+# metadata is now saved in a pairtree directory structure based off of id
+```
 
 ## Development
 
@@ -32,10 +35,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/gov_scooper.
+Bug reports and pull requests are welcome on GitHub at https://github.com/mejackreed/GovScooper.
 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
