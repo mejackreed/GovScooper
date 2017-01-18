@@ -25,6 +25,9 @@ metadata_enumberable = DataGov::API.new.search
 metadata_enumberable.length #=> 10
 metadata_enumberable.map { |md| DataGov::Dataset.new(md).save_ckan_metadata }
 # metadata is now saved in a pairtree directory structure based off of id
+
+# Download the resources
+DataGov::Dataset.from_id('8a311c18-3060-438e-a8c7-9e37bcde6529').resources.map { |r| r.download }
 ```
 
 ## Development
