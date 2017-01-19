@@ -45,11 +45,15 @@ namespace :gov_scooper do
     puts "#{layers.length} layers found"
     resource_count = 0
     layers.each do |layer|
-      dataset = DataGov::Dataset.from_id(layer[0])
-      puts "Downloading from dataset #{dataset.id}"
-      resources = dataset.resources
-      resource_count += resources.length
-      resources.map(&:download)
+      begin
+        dataset = DataGov::Dataset.from_id(layer[0])
+        puts "Downloading from dataset #{dataset.id}"
+        resources = dataset.resources
+        resource_count += resources.length
+        resources.map(&:download)
+      rescue StandardError => e
+        puts e
+      end
     end
     puts "#{resource_count} total resources"
   end

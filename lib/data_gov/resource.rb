@@ -17,6 +17,7 @@ module DataGov
         puts "#{file_name} already exists, skipping download"
         return
       end
+      puts "Downloading from: #{metadata['url']}"
       pbar = ProgressBar.create(title: file_name, total: nil)
       begin
         download = open(metadata['url'],
