@@ -1,5 +1,6 @@
 require 'mime/types'
 require 'open-uri'
+require 'open_uri_redirections'
 require 'ruby-progressbar'
 
 module DataGov
@@ -19,6 +20,7 @@ module DataGov
       pbar = ProgressBar.create(title: file_name, total: nil)
       begin
         download = open(metadata['url'],
+                        allow_redirections: :safe,
                         content_length_proc: lambda do |content_length|
                           if content_length && 0 < content_length
                             pbar.total = content_length
