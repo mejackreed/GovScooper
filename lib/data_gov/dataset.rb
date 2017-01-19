@@ -1,5 +1,5 @@
 require 'pairtree'
-require 'JSON'
+require 'json'
 
 module DataGov
   class Dataset
