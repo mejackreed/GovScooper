@@ -19,17 +19,23 @@ module DataGov
       end
       puts "Downloading from: #{metadata['url']}"
       begin
+        FileUtils.mkdir_p(directory)
+        retries ||= 0
+        puts "try ##{retries}"
         download = open(
           metadata['url'],
-          allow_redirections: :safe,
+          allow_redirections: :all,
           read_timeout: 900,
-          open_timeout: 180
+          open_timeout: 60
         )
-        Dir.mkdir(directory)
         File.open(File.join(directory, file_name), 'w') { |io| IO.copy_stream(download, io) }
         File.open(File.join(directory, 'headers.txt'), 'w') { |file| file.write(download.meta.to_json) }
       rescue StandardError => e
         puts e.inspect
+        if (retries += 1) < 3
+          puts 'Retrying'
+          retry
+        end
         puts "Removing #{directory}"
         FileUtils.rm_rf(directory)
       end
