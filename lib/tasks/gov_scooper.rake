@@ -5,8 +5,12 @@ require 'fileutils'
 
 def download_layers(layers)
   resource_count = 0
+  layer_count = 0
+  layer_total = layers.count
   layers.each do |layer|
     begin
+      layer_count += 1
+      puts "#{layer_count} of #{layer_total}"
       dataset = DataGov::Dataset.from_id(layer[0])
       puts "Downloading from dataset #{dataset.id}"
       resources = dataset.resources
