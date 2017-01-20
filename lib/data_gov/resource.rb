@@ -1,7 +1,7 @@
 require 'mime/types'
 require 'open-uri'
 require 'open_uri_redirections'
-require 'ruby-progressbar'
+require 'fileutils'
 
 module DataGov
   class Resource
@@ -13,35 +13,34 @@ module DataGov
     end
 
     def download
-      if dataset.pairtree.exists?(file_name)
+      if File.exist?(File.join(directory, file_name))
         puts "#{file_name} already exists, skipping download"
         return
       end
       puts "Downloading from: #{metadata['url']}"
-      pbar = ProgressBar.create(title: file_name, total: nil)
       begin
-        download = open(metadata['url'],
-                        allow_redirections: :safe,
-                        content_length_proc: lambda do |content_length|
-                          if content_length && 0 < content_length
-                            pbar.total = content_length
-                          end
-                        end,
-                        progress_proc: lambda do |s|
-                          if pbar.total
-                            pbar.progress += s
-                          else
-                            pbar.increment
-                          end
-                        end)
-        dataset.pairtree.open(file_name, 'w') { |io| IO.copy_stream(download, io) }
+        download = open(
+          metadata['url'],
+          allow_redirections: :safe,
+          read_timeout: 900,
+          open_timeout: 180
+        )
+        Dir.mkdir(directory)
+        File.open(File.join(directory, file_name), 'w') { |io| IO.copy_stream(download, io) }
+        File.open(File.join(directory, 'headers.txt'), 'w') { |file| file.write(download.meta.to_json) }
       rescue StandardError => e
-        puts e
+        puts e.inspect
+        puts "Removing #{directory}"
+        FileUtils.rm_rf(directory)
       end
     end
 
+    def directory
+      File.join(dataset.pairtree.path, metadata['id'])
+    end
+
     def file_name
-      "#{metadata['id']}.#{extension}"
+      File.basename(metadata['url'])
     end
 
     def extension
